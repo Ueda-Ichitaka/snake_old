@@ -1,0 +1,26 @@
+package snake.game;
+
+import processing.core.PApplet;
+
+public class Spielfenster extends PApplet {
+	public static final int standard_tile = 300;
+	private Spiel spiel;
+	private int height;
+	public Spielfenster(Spiel spiel,int height) {
+
+	}
+
+	@Override
+	public void draw() {
+		
+		super.draw();
+		spiel.onDraw(this, 1);
+	}
+
+	@Override
+	public void setup() {
+		
+		super.setup();
+		this.setSize(height,height);
+	}
+}

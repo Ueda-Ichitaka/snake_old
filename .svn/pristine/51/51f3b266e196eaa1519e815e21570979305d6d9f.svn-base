@@ -1,0 +1,52 @@
+package snake.gui;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class OptPanel extends JPanel implements ActionListener 
+{
+	private static final int BOLD = 0;
+	private MainForm host;	//for communication with form
+	private JButton back;
+	private JLabel title;
+	
+	public OptPanel(MainForm host)
+	{
+		this.host = host;
+		this.setSize(host.getSize());
+		this.setLayout(null);
+		this.setBackground(Color.blue);
+		initComponents();
+	}
+	
+	public void initComponents()
+	{
+		back = new JButton("<");
+		title = new JLabel("SETTINGS");
+		
+		add(back);
+		add(title);
+		
+		title.setFont(new Font("Dialog", BOLD, 24));
+		title.setForeground(Color.black);
+		
+		back.addActionListener(this);
+		
+		Insets insets = this.getInsets();
+		Dimension size = back.getPreferredSize();
+		back.setBounds(10 + insets.left, 5 + insets.top, size.width, size.height);
+		size = title.getPreferredSize();
+		title.setBounds(400 - (size.width / 2) + insets.left, 10 + insets.top, size.width, size.height);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) 
+	{
+		if(e.getSource() == back)
+		{
+			host.showMain();
+		}
+	}
+}

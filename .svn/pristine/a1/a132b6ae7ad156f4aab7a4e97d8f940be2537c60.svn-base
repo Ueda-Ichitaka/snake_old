@@ -1,0 +1,90 @@
+package snake.gui;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.awt.Graphics;
+import java.io.IOException;
+import java.net.URL;
+
+public class MainMenuPanel extends JPanel implements ActionListener
+{
+	private MainForm host;	//for communication with form
+	private JButton start;	//button to start the game
+	private JButton score;	//button for highscore
+	private JButton opt;	//button for settings	
+	
+	
+	
+	public MainMenuPanel(MainForm host)
+	{
+		this.host = host;
+		this.setSize(host.getSize());
+		setLayout(null);
+		initComponents();
+	}
+	
+	public void initComponents()
+	{		
+		start = new JButton("Start");
+		score = new JButton("Highscore");
+		opt = new JButton("Settings");
+		
+		start.addActionListener(this);
+		score.addActionListener(this);
+		opt.addActionListener(this);
+		
+		add(start);
+		add(score);
+		add(opt);
+		
+		//position the components manually without layout-manager
+		Insets insets = this.getInsets();
+		Dimension size = start.getPreferredSize();
+		start.setBounds(400 + insets.left - (size.width / 2), 100 + insets.top, size.width, size.height);
+		size = score.getPreferredSize();
+		score.setBounds(400 + insets.left - (size.width / 2), 150 + insets.top, size.width, size.height);
+		size = opt.getPreferredSize();
+		opt.setBounds(400 + insets.left - (size.width / 2), 200 + insets.top, size.width, size.height);	
+	}
+	
+	@Override
+	protected void paintComponent(Graphics g)
+	{
+		BufferedImage bg = null;
+		try {
+			URL url = getClass().getResource("bg.png");
+			bg = ImageIO.read(url);
+		}
+		catch (IOException e) { System.out.println("exception " + e.getMessage()); }
+	    super.paintComponent(g);
+	    g.drawImage(bg, 0, 0, this);    	
+	    g.finalize();
+	}
+	
+	public void setvisible(boolean visible)
+	{
+		this.setvisible(visible);
+	}
+	
+	public void actionPerformed(ActionEvent e)
+	{
+		if(e.getSource() == this.start)
+		{
+			host.startGame();
+		}
+		if(e.getSource() == this.score)
+		{
+			host.showHighScore();
+		}
+		if(e.getSource() == this.opt)
+		{
+			host.showOpts();
+		}
+	}
+	
+	
+}

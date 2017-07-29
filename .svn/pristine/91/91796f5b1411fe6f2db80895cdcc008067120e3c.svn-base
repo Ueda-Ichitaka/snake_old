@@ -1,0 +1,358 @@
+package snake.game;
+
+import java. sql. *;
+import java. util. *;
+
+class DATENBANKZUGRIFF
+{           
+    private String treiber = "sun.jdbc.odbc.JdbcOdbcDriver";    // Treiber
+    String pfad ="jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=" + "Highscoreeintrag";  // Pfad zur Datenbank
+    private String user = "";  
+    private String pWort = ""; 
+    // Das Verbindungsobjekt
+    private Connection conn;
+    //Hält die Referenz auf das einzige existierende Objekt der Klasse DATENBANKVERBINDUNG
+    private static DATENBANKZUGRIFF verbindung = new DATENBANKZUGRIFF ();
+
+    /**
+     * Der Konstruktor öffnet die Datenbankverbindung
+     */
+    private DATENBANKZUGRIFF()
+    {
+        // Datenbankverbindung öffnen       
+        // Darf nur ein mal ausgeführt werden, daher wird das Muster Singleton verwendet.
+        
+        // ODBC bzw. JDBC Treiber laden
+        try         
+        {   
+            
+            Class.forName(treiber);
+        }
+        catch(Exception e)
+        {               
+            System.out.println("Start_Fehler beim Laden des JDBC-Treibers "+ e);
+            System. exit (-1);
+        }
+        
+        // Öffnen der Datenbank       
+        try
+        {              
+            conn = DriverManager.getConnection(pfad, user, pWort);
+        }
+        catch(Exception e)
+        {   
+            System.out.println("Start_Fehler bei Datenbankzugriff\n"+ e); 
+            System. exit (-1);
+        }
+    }
+
+    /**
+     * Beendet die Verbindung zur Datenbank, alle Resourcen werden freigegeben.
+     */
+    public void Schliessen ()
+    {
+        try
+        {              
+            conn. close ();
+            verbindung = null;
+        }
+        catch(Exception e)
+        {   
+            System.out.println ("Fehler beim Beenden der Datenbankverbindung\n"+ e); 
+        }
+    }
+
+    /**
+     * Name eines Schülers zu seiner Schülernummer holen
+     * @param schuelerID Schlüssel des Schülers
+     * @return Name des angegebenen Schülers.
+     */
+    public String SpielerNameHolen (int Platz)
+    {      
+        ResultSet sqlResult;        // Ergebnistabelle
+        Statement stmt;             // Datenbankabfrage
+        String name;               
+        name = "";            
+        try
+        {
+            stmt = conn. createStatement ();
+            sqlResult = stmt. executeQuery ("SELECT Name FROM spieler "+ 
+                                             "WHERE Nr =" + Platz);                      
+            // Wenn Ergebnistabelle einen Datensatz enthält, wird Cursor darauf gesetzt.
+            if (sqlResult. next ())
+            {
+                name = sqlResult.getString ("Name")
+            }
+            sqlResult. close ();
+            stmt. close ();  
+        }
+        catch(Exception e)
+        {   
+            System.out.println ("SpielerNameHolen: Fehler bei SQL Abfrage\n" + e);
+        }
+        return name;
+    }
+
+    
+    /**
+     * Liste aller Schüler ausgeben
+     * @return Feld mit den Vornamen, Nachnamen und Geburtsjahren der Schüler.
+     */
+    public String [] SpielerInfoHolen ()
+    {      
+        ResultSet sqlResult;        // Ergebnistabelle
+        Statement stmt;             // Datenbankabfrage
+        String [] liste;               
+        try
+        {
+            //Standard-Statements erlauben nur eine Vorwärtsbewegung des Cursors durch die Reihen
+            //des ResultSet. Damit der Cursor beliebig hin und her bewegt werden kann, müssen
+            //folgende Parameter mitgegeben werden.
+            stmt = conn. createStatement (ResultSet.TYPE_SCROLL_INSENSITIVE,
+                                          ResultSet.CONCUR_UPDATABLE);
+            sqlResult = stmt. executeQuery ("SELECT Platz, Name, Gespielte Spiele FROM spieler");
+            sqlResult. afterLast ();    //Cursor hinter dem letzten Datensatz positionieren
+            sqlResult. previous ();     //Cursor auf den letzten Datensatz positionieren
+            liste = new String [sqlResult. getRow ()];  //liste in Größe der Ergebnistabelle anlegen
+            sqlResult. beforeFirst ();  //Cursor vor den ersten Datensatz positionieren
+            // Ergebnistabelle auslesen
+            int i = 0;
+            while (sqlResult. next ())  
+            {
+                liste [i] = sqlResult. getINT ("Platz") + " " + sqlResult. getString ("Name")
+                            + " " + sqlResult. getINT ("Gespielte Spiele");
+                i++;
+            }
+            sqlResult. close ();
+            stmt. close ();
+            return liste;
+        }
+        catch(Exception e)
+        {   
+            System.out.println ("SpielerInfoHolen: Fehler bei SQL Abfrage\n" + e);
+            return null;            
+        }
+    }
+
+    /**
+     * Alle Schüler, die von einem bestimmten Lehrer mit Name nName 
+     * unterrichtet werden, ausgeben.
+     **/
+    public String [] SchuelerZuLehrerHolen (String nName)
+    {
+        String [] schuelerListe = new String [20];
+        ResultSet sqlResult;
+        Statement stmt;
+        
+        try
+        {
+            stmt = conn. createStatement ();
+            sqlResult = stmt. executeQuery ("SELECT schueler.Vorname, schueler.Nachname "  +
+                " FROM schueler, ist_Lehrkraft_von, lehrkraft" + 
+                " WHERE (schueler.Nr = ist_Lehrkraft_von.S_Nr) AND"+
+                " (lehrkraft.Nr = ist_Lehrkraft_von.L_Nr) AND"+
+                " (lehrkraft.Nachname = '" + nName + "')"+   //Achtung: Hochkomma in Anführungszeichen!   
+                " ORDER BY schueler.Nachname ASC ");         // alphabetische Sortierung 
+            // Ergebnistabelle auslesen
+            int i = 0;
+            while (sqlResult. next ())  
+            {
+                schuelerListe [i] = sqlResult. getString ("Vorname") + " " + sqlResult. getString ("Nachname");
+                i++;
+            }
+            sqlResult. close ();
+            stmt. close ();
+            return schuelerListe;
+        }
+        catch (Exception e)
+        {   
+            System.out.println ("LehrerHolen: Fehler bei SQL Abfrage  \n"+ e);
+            return null;
+        }  
+        
+    }      
+
+    /**
+     * Neuen Schüler anlegen
+     **/
+    public void schuelerEinfuegen (int nr, String vname, String nname, int gebJahr, String geschlecht)
+    {
+        Statement stmt;
+        try
+        {                                
+            stmt = conn. createStatement ();
+            stmt. executeUpdate ("INSERT INTO schueler (Nr, Vorname, Nachname, Geburtsjahr, Geschlecht) "+
+                                 " VALUES ("+ nr +", '"+ vname + "', '"+ nname +"',"+ gebJahr +", '"+ geschlecht +"');");
+            stmt. close ();
+        }
+        catch (Exception e)
+        {   
+            System.out.println ("SchuelerEinfuegen: Fehler bei SQL Abfrage\n"+ e);
+        }
+    }
+
+    /**
+     * Ermittelt die Anzahl der Schüler in der Datenbank
+     **/
+    public int AnzSchuelerGeben ()
+    {
+        ResultSet sqlResult;
+        Statement stmt;
+        int anzahl = 0;
+        
+        try
+        {
+            stmt = conn. createStatement ();
+            sqlResult = stmt. executeQuery ("SELECT COUNT(*) AS Anzahl_Schueler FROM schueler");
+            if (sqlResult. next ())
+            {
+                anzahl = sqlResult. getInt ("Anzahl_Schueler");
+                
+            }
+            sqlResult. close ();
+            stmt. close ();
+            return anzahl;
+        }
+        catch (Exception e)
+        {   
+            System.out.println ("AnzSchuelerGeben: Fehler bei SQL Abfrage \n"+ e);
+            return 0;
+        }
+    }
+    
+    /**
+     * Schülername ändern
+     **/
+    public void schuelerNameAendern (int schuelerNr, String neuerNachname)
+    {
+        Statement stmt;
+        try
+        {                                
+            stmt = conn. createStatement ();
+            stmt. executeUpdate ("UPDATE schueler SET Nachname = '" + neuerNachname + "' WHERE Nr = " + schuelerNr); 
+            stmt. close ();
+        }
+        catch (Exception e)
+        {   
+            System.out.println ("SchuelerNameAendern: Fehler bei SQL Abfrage\n"+ e);
+        }
+    }
+            
+    /**
+     * Schüler löschen
+     **/
+    public void schuelerLoeschen (int schuelerNr)
+    {
+        Statement stmt;
+        try
+        {                                
+            stmt = conn. createStatement ();
+            stmt. executeUpdate ("DELETE FROM schueler WHERE Nr = " + schuelerNr); 
+            stmt. close ();
+        }
+        catch (Exception e)
+        {   
+            System.out.println ("SchuelerLoeschen: Fehler bei SQL Abfrage\n"+ e);
+        }
+    }
+    
+    /**
+     * Gibt eine Referenz auf das Verbindungsobjekt zurück.
+     * @return Referenz auf das Verbindungsobjekt
+     **/
+    public static DATENBANKZUGRIFF VerbindungGeben ()
+    {
+        return verbindung;
+    }
+    
+    
+    
+    
+    
+    
+    
+   public String LehrerWohnortHolen (int LehrerID)
+    {      
+        ResultSet sqlResult;        // Ergebnistabelle
+        Statement stmt;             // Datenbankabfrage
+        String wohnort;               
+        wohnort = null;
+        try
+        {
+            stmt = conn. createStatement ();
+            sqlResult = stmt. executeQuery ("SELECT Wohnort FROM lehrkraft "+ 
+                                             "WHERE Nr =" + LehrerID);                      
+            // Wenn Ergebnistabelle einen Datensatz enthält, wird Cursor darauf gesetzt.
+            if (sqlResult. next ())
+            {
+                wohnort = sqlResult.getString ("Wohnort");
+            }
+            sqlResult. close ();
+            stmt. close ();  
+        }
+        catch(Exception e)
+        {   
+            System.out.println ("SchuelerHolen: Fehler bei SQL Abfrage\n" + e);
+            
+        }
+        return wohnort;
+       
+    } 
+    
+    
+    
+    
+    
+   public String [] LehrerNamenHolen ()
+    {      
+        ResultSet sqlResult;        // Ergebnistabelle
+        Statement stmt;             // Datenbankabfrage
+        String [] liste;               
+        try
+        {
+            //Standard-Statements erlauben nur eine Vorwärtsbewegung des Cursors durch die Reihen
+            //des ResultSet. Damit der Cursor beliebig hin und her bewegt werden kann, müssen
+            //folgende Parameter mitgegeben werden.
+            stmt = conn. createStatement (ResultSet.TYPE_SCROLL_INSENSITIVE,
+                                          ResultSet.CONCUR_UPDATABLE);
+            sqlResult = stmt. executeQuery ("SELECT Vorname, Nachname, Wohnort FROM lehrkraft");
+            sqlResult. afterLast ();    //Cursor hinter dem letzten Datensatz positionieren
+            sqlResult. previous ();     //Cursor auf den letzten Datensatz positionieren
+            liste = new String [sqlResult. getRow ()];  //liste in Größe der Ergebnistabelle anlegen
+            sqlResult. beforeFirst ();  //Cursor vor den ersten Datensatz positionieren
+            // Ergebnistabelle auslesen
+            int i = 0;
+            while (sqlResult. next ())  
+            {
+                liste [i] = sqlResult. getString ("Vorname") + " " + sqlResult. getString ("Nachname")
+                            + " " + sqlResult. getString ("Wohnort");
+                i++;
+            }
+            sqlResult. close ();
+            stmt. close ();
+            return liste;
+        }
+        catch(Exception e)
+        {   
+            System.out.println ("LehrerNamenHolen: Fehler bei SQL Abfrage\n" + e);
+            return null;            
+        }
+    }
+    
+    
+       public void EintragHinzufuegen (int L_Nr, int S_Nr)
+    {
+        Statement stmt;
+        try
+        {                                
+            stmt = conn. createStatement ();
+            stmt. executeUpdate ("INSERT INTO ist_lehrkraft_von (L_nr, S_Nr) "+
+                                 " VALUES ("+ L_Nr +", "+ S_Nr + ");");
+            stmt. close ();
+        }
+        catch (Exception e)
+        {   
+            System.out.println ("EintragHinzufuegen: Fehler bei SQL Abfrage\n"+ e);
+        }
+    }
+}

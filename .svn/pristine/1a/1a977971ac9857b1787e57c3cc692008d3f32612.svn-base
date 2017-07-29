@@ -1,0 +1,91 @@
+package snake.game.objects;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import processing.core.PApplet;
+import snake.game.ActionEnum;
+import snake.game.OnAction;
+import snake.game.OnDraw;
+import snake.game.OnMove;
+
+public class Schlange implements OnMove, OnDraw, OnAction {
+
+	private List<Schlangenteil> schlange;
+	private int laenge;
+	private int direction;
+
+	public Schlange() {
+		laenge = 10;
+		schlange = new LinkedList<Schlangenteil>();
+		direction = 1;
+	}
+
+	public void start() {
+		for (int i = laenge; i > 0; i--) {
+			schlange.add(new Schlangenteil((i + 1), 5));
+		}
+	}
+
+	public void onDraw(PApplet window, float scale) {
+		for (Schlangenteil teil : schlange) {
+			teil.onDraw(window, scale);
+
+		}
+	}
+
+	public boolean onMove(int width, int height) {
+		Schlangenteil first = schlange.get(0);
+		System.out.println("First coord 1: x:" + first.xGeben() + " y:"+ first.yGeben());
+		schlange.add(1, new Schlangenteil(first.xGeben(), first.yGeben()));
+		switch (direction) {
+		case 1: {
+			first.nachRechts();
+		}
+			break;
+		case 2: {
+			first.nachLinks();
+		}
+			break;
+		case 3: {
+			first.nachOben();
+		}
+			break;
+		case 4: {
+			first.nachUnten();
+		}
+			break;
+		}
+		schlange.remove(laenge);
+		System.out.println("First coord 2: x:" + first.xGeben() + " y:"+ first.yGeben());
+		if (first.xGeben() < width && first.xGeben() >= 0
+				&& first.yGeben() < height && first.yGeben() >= 0) {
+			return true;
+		} else {
+			System.out.println("First coord: x:" + first.xGeben() + " y:"+ first.yGeben());
+			return false;
+			
+		}
+
+	}
+
+	@Override
+	public void onAction(ActionEnum action) {
+		
+		switch (action) {
+		case LINKS:
+			direction = 2;
+			break;
+		case RECHTS:
+			direction = 1;
+			break;
+		case OBEN:
+			direction = 3;
+			break;
+		case UNTEN:
+			direction = 4;
+			break;
+		}
+	}
+
+}

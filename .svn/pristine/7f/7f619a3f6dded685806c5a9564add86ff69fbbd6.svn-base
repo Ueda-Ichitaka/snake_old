@@ -1,0 +1,75 @@
+package snake.game;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import processing.core.PApplet;
+
+public class Spiel implements OnDraw{
+	public int getHeight() {
+		return height;
+	}
+	public int getWidth() {
+		return width;
+	}
+
+	private List<OnMove> moving_objects;
+	private List<OnCollide> colliding_objects;
+	private List<OnDraw> drawable;
+	private Timer onMoveTimer;
+	boolean gameover = false;
+	//Breite Höhe in Kachelanzahl
+	private int height,width;
+	public Spiel(List<Object> Objekte,int height,int width){
+		moving_objects = new ArrayList<OnMove>();
+		colliding_objects = new ArrayList<OnCollide>();
+		drawable = new ArrayList<OnDraw>();
+		
+		for(Object o:Objekte){
+			if(o instanceof OnMove){
+				moving_objects.add((OnMove) o);
+			}
+			if(o instanceof OnCollide){
+				colliding_objects.add((OnCollide) o);
+			}
+			if(o instanceof OnDraw){
+				drawable.add((OnDraw) o);
+			}
+		}
+		
+		
+		onMoveTimer = new Timer();
+		onMoveTimer.scheduleAtFixedRate(new TimerTask(){
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				
+			}},100L,500L);
+	}
+	@Override
+	public void onDraw(PApplet window, float scale) {
+		for(OnDraw draw:drawable){
+			draw.onDraw(window,  scale);
+		}
+		if(gameover){
+			window.text("Game Over", 0, 0);
+			
+		}
+	}
+	
+	public void onMove() {
+		for(OnMove om :moving_objects){
+			if(!om.onMove(height, height)){
+				gameover = true;
+				onMoveTimer.cancel();
+			}
+		}
+		
+		
+	}
+	
+
+}

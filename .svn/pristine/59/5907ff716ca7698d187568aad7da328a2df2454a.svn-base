@@ -1,0 +1,22 @@
+package snake.game.objects;
+
+import java.awt.Point;
+
+import processing.core.PApplet;
+import snake.game.OnDraw;
+import snake.game.Spielfenster;
+
+public class BackgroundTile implements OnDraw {
+	public BackgroundTile(Point position) {
+		super();
+		this.position = position;
+	}
+	Point position;
+	@Override
+	public void onDraw(PApplet window, float scale) {
+		window.fill(119, 100, 54);
+		window.rect((position.x-1)*Spielfenster.standard_tile * scale+1,(position.y-1)*Spielfenster.standard_tile * scale+1 ,Spielfenster.standard_tile * scale, Spielfenster.standard_tile * scale);
+
+	}
+
+}

@@ -1,0 +1,302 @@
+package snake.database;
+
+import java.nio.file.Paths;
+import java. sql. *;
+//import java. util. *;
+
+class DATENBANKZUGRIFF
+{           
+    private String treiber = "sun.jdbc.odbc.JdbcOdbcDriver";    // Treiber
+    String pfad ="jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=" + Paths.get("").toAbsolutePath().toString() + "\\src\\snake\\database\\score.mdb";  // Pfad zur Datenbank
+    private String user = "";  
+    private String pWort = ""; 
+    // Das Verbindungsobjekt
+    private Connection conn;
+    //Hält die Referenz auf das einzige existierende Objekt der Klasse DATENBANKVERBINDUNG
+    private static DATENBANKZUGRIFF verbindung = new DATENBANKZUGRIFF ();
+
+    /**
+     * Der Konstruktor öffnet die Datenbankverbindung
+     */
+    private DATENBANKZUGRIFF()
+    {
+        // Datenbankverbindung öffnen       
+        // Darf nur ein mal ausgeführt werden, daher wird das Muster Singleton verwendet.
+        
+        // ODBC bzw. JDBC Treiber laden
+        try         
+        {   
+            
+            Driver d = (Driver) Class.forName("sun.jdbc.odbc.JdbcOdbcDriver").newInstance();
+        }
+        catch(Exception e)
+        {               
+            System.out.println("Start_Fehler beim Laden des JDBC-Treibers "+ e);
+            System. exit (-1);
+        }
+        
+        // Öffnen der Datenbank       
+        try
+        {  
+        	String filename = "score.mdb";
+        	String data = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=";
+        	data += filename.trim() + ";DriverID=22;READONLY=true}";
+        	
+            conn = DriverManager.getConnection(pfad, "", "");	//"jdbc:odbc:MS Access Database;DBQ=" + filename
+        }
+        catch(Exception e)
+        {   
+            System.out.println("Start_Fehler bei Datenbankzugriff\n"+ e); 
+            System. exit (-1);
+        }
+    }
+
+    //TODO method to add entry to highscore 
+    
+    
+    /**
+     * Beendet die Verbindung zur Datenbank, alle Resourcen werden freigegeben.
+     */
+    public void Schliessen ()
+    {
+        try
+        {              
+            conn. close ();
+            verbindung = null;
+        }
+        catch(Exception e)
+        {   
+            System.out.println ("Fehler beim Beenden der Datenbankverbindung\n"+ e); 
+        }
+    }
+    
+    public String SpielerNameHolen (int Platz)
+    {      
+        ResultSet sqlResult;        // Ergebnistabelle
+        Statement stmt;             // Datenbankabfrage
+        String name;               
+        name = "";            
+        try
+        {
+            stmt = conn. createStatement ();
+            sqlResult = stmt. executeQuery ("SELECT Name FROM Highscore "+ 
+                                             "WHERE Platz =" + Platz);                      
+            // Wenn Ergebnistabelle einen Datensatz enthält, wird Cursor darauf gesetzt.
+            if (sqlResult. next ())
+            {
+                name = sqlResult.getString ("Name");
+            }
+            sqlResult. close ();
+            stmt. close ();  
+        }
+        catch(Exception e)
+        {   
+            System.out.println ("SpielerNameHolen: Fehler bei SQL Abfrage\n" + e);
+        }
+        return name;
+    }
+    
+    public int SpielerScoreHolen (int Platz)
+    {      
+        ResultSet sqlResult;        // Ergebnistabelle
+        Statement stmt;             // Datenbankabfrage
+        int score = 0;                           
+        try
+        {
+            stmt = conn. createStatement ();
+            sqlResult = stmt. executeQuery ("SELECT Punktezahl FROM Highscore "+ 
+                                             "WHERE Platz =" + Platz);                      
+            // Wenn Ergebnistabelle einen Datensatz enthält, wird Cursor darauf gesetzt.
+            if (sqlResult. next ())
+            {
+                score = sqlResult.getInt ("Punktezahl"); 
+            }
+            sqlResult. close ();
+            stmt. close ();  
+        }
+        catch(Exception e)
+        {   
+            System.out.println ("SpielerNameHolen: Fehler bei SQL Abfrage\n" + e);
+        }
+        return score;
+    }
+    
+    public String [] SpielerNamenHolen ()
+    {      
+        ResultSet sqlResult;        // Ergebnistabelle
+        Statement stmt;             // Datenbankabfrage
+        String [] liste;               
+        try
+        {
+            //Standard-Statements erlauben nur eine Vorwärtsbewegung des Cursors durch die Reihen
+            //des ResultSet. Damit der Cursor beliebig hin und her bewegt werden kann, müssen
+            //folgende Parameter mitgegeben werden.
+            stmt = conn. createStatement (ResultSet.TYPE_SCROLL_INSENSITIVE,
+                                          ResultSet.CONCUR_UPDATABLE);
+            sqlResult = stmt. executeQuery ("SELECT Platz, Name, gespielte Spiele FROM spieler");
+            sqlResult. afterLast ();    //Cursor hinter dem letzten Datensatz positionieren
+            sqlResult. previous ();     //Cursor auf den letzten Datensatz positionieren
+            liste = new String [sqlResult. getRow ()];  //liste in Größe der Ergebnistabelle anlegen
+            sqlResult. beforeFirst ();  //Cursor vor den ersten Datensatz positionieren
+            // Ergebnistabelle auslesen
+            int i = 0;
+            while (sqlResult. next ())  
+            {
+                liste [i] = sqlResult. getInt ("Platz") + " " + sqlResult. getString ("Name")
+                            + " " + sqlResult. getInt ("gespielte Spiele");
+                i++;
+            }
+            sqlResult. close ();
+            stmt. close ();
+            return liste;
+        }
+        catch(Exception e)
+        {   
+            System.out.println ("SpielerNamenHolen: Fehler bei SQL Abfrage\n" + e);
+            return null;            
+        }
+    }
+    
+    /**
+     * Liste aller Spieler ausgeben
+     * @return Feld mit dem Platz, Namen und gespielte Spiele.
+     */
+    public String [] SpielerInfoHolen ()
+    {      
+        ResultSet sqlResult;        // Ergebnistabelle
+        Statement stmt;             // Datenbankabfrage
+        String [] liste;               
+        try
+        {
+            //Standard-Statements erlauben nur eine Vorwärtsbewegung des Cursors durch die Reihen
+            //des ResultSet. Damit der Cursor beliebig hin und her bewegt werden kann, müssen
+            //folgende Parameter mitgegeben werden.
+            stmt = conn. createStatement (ResultSet.TYPE_SCROLL_INSENSITIVE,
+                                          ResultSet.CONCUR_UPDATABLE);
+            sqlResult = stmt. executeQuery ("SELECT Platz, Name, Gespielte Spiele FROM spieler");
+            sqlResult. afterLast ();    //Cursor hinter dem letzten Datensatz positionieren
+            sqlResult. previous ();     //Cursor auf den letzten Datensatz positionieren
+            liste = new String [sqlResult. getRow ()];  //liste in Größe der Ergebnistabelle anlegen
+            sqlResult. beforeFirst ();  //Cursor vor den ersten Datensatz positionieren
+            // Ergebnistabelle auslesen
+            int i = 0;
+            while (sqlResult. next ())  
+            {
+                liste [i] = sqlResult. getInt ("Platz") + " " + sqlResult. getString ("Name")
+                            + " " + sqlResult. getInt ("Gespielte Spiele");
+                i++;
+            }
+            sqlResult. close ();
+            stmt. close ();
+            return liste;
+        }
+        catch(Exception e)
+        {   
+            System.out.println ("SpielerInfoHolen: Fehler bei SQL Abfrage\n" + e);
+            return null;            
+        }
+    }  
+     
+    /**
+     * Neuen Spieler anlegen
+     **/
+    public void spielerEinfuegen (String name)
+    {    int gespielteSpiele = 0;
+   	 	 int Platz = AnzSpielerGeben() + 1;
+         Statement stmt;
+         try
+         {                                
+             stmt = conn. createStatement ();
+             stmt. executeUpdate ("INSERT INTO spieler (Platz, Name, gespielteSpiele) "+
+                                  " VALUES ("+ Platz +", '"+ name + "', '"+ gespielteSpiele +"');");
+             stmt. close ();
+         }
+         catch (Exception e)
+         {   
+             System.out.println ("SpielerEinfuegen: Fehler bei SQL Abfrage\n"+ e);
+         }
+    }
+
+    /**
+     * Ermittelt die Anzahl der Spieler in der Datenbank
+     **/
+    public int AnzSpielerGeben ()
+    {
+        ResultSet sqlResult;
+        Statement stmt;
+        int anzahl = 0;
+        
+        try
+        {
+            stmt = conn. createStatement ();
+            sqlResult = stmt. executeQuery ("SELECT COUNT(*) AS Anzahl_Spieler FROM spieler");
+            if (sqlResult. next ())
+            {
+                anzahl = sqlResult. getInt ("Anzahl_Spieler");
+                
+            }
+            sqlResult. close ();
+            stmt. close ();
+            return anzahl;
+        }
+        catch (Exception e)
+        {   
+            System.out.println ("AnzSpielerGeben: Fehler bei SQL Abfrage \n"+ e);
+            return 0;
+        }
+    }    
+    
+    public int AnzEintraegeGeben()
+    {
+        ResultSet sqlResult;
+        Statement stmt;
+        int anzahl = 0;
+        
+        try
+        {
+            stmt = conn. createStatement ();
+            sqlResult = stmt. executeQuery ("SELECT COUNT(*) FROM Highscore");
+            if (sqlResult. next ())
+            {
+                anzahl = sqlResult. getInt (1);
+                
+            }
+            sqlResult. close ();
+            stmt. close ();
+            return anzahl;
+        }
+        catch (Exception e)
+        {   
+            System.out.println ("AnzEintraegeGeben: Fehler bei SQL Abfrage \n"+ e);
+            return 0;
+        }
+    }
+                
+    /**
+     * Spieler löschen
+     **/
+    public void spielerLoeschen (String name)
+    {
+        Statement stmt;
+        try
+        {                                
+            stmt = conn. createStatement ();
+            stmt. executeUpdate ("DELETE FROM spieler WHERE Name = " + name); 
+            stmt. close ();
+        }
+        catch (Exception e)
+        {   
+            System.out.println ("SpielerLoeschen: Fehler bei SQL Abfrage\n"+ e);
+        }
+    }
+    
+    /**
+     * Gibt eine Referenz auf das Verbindungsobjekt zurück.
+     * @return Referenz auf das Verbindungsobjekt
+     **/
+    public static DATENBANKZUGRIFF VerbindungGeben ()
+    {
+        return verbindung;
+    }
+    
+}

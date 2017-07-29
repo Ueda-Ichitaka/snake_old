@@ -1,0 +1,94 @@
+package snake.game.objects;
+
+import java.awt.Point;
+import java.util.List;
+
+import snake.game.OnCollide;
+import snake.game.OnDraw;
+import snake.game.Spielfenster;
+
+public class Kopf implements OnDraw,OnCollide{
+	public static final int RECHTS = 1, LINKS = -1, OBEN = 2, UNTEN = -2;
+	private Point position;
+
+	public Kopf(int xneu, int yneu) {
+		position = new Point(xneu, yneu);
+
+	}
+
+	public int xGeben() {
+		return position.x;
+	}
+
+	public int yGeben() {
+		return position.y;
+	}
+
+	public void move(int dir) {
+		switch (dir) {
+		case RECHTS:
+			position.x++;
+			break;
+		case LINKS:
+			position.x--;
+			break;
+		case OBEN:
+			position.y--;
+			break;
+		case UNTEN:
+			position.y++;
+			break;
+
+		}
+
+	}
+
+	public boolean canMove(int dir, int width, int height) {
+		switch (dir) {
+		case RECHTS:
+			return (position.x < width-1);
+
+		case LINKS:
+			return (position.x > 0);
+
+		case OBEN:
+			return (position.y > 0);
+
+		case UNTEN:
+			return (position.y < height-1);
+
+		default:
+			return false;
+
+		}
+	}
+	@Override
+	public void onDraw(Spielfenster window, float scale,int actual_tile_dimension) {
+		window.fill(50, 100, 50);
+		window.noStroke();
+
+		Point draw_to = Spielfenster.kachel_nach_pixel(position, scale);
+
+		window.rect(draw_to.x, draw_to.y, Spielfenster.standard_tile * scale,
+				Spielfenster.standard_tile * scale);
+
+	}
+
+	@Override
+	public boolean onCollide(OnCollide colliding) {
+		
+		return false;
+	}
+
+	@Override
+	public List<OnCollide> getobjects() {
+		
+		return null;
+	}
+
+	@Override
+	public Point getposition() {
+		
+		return position;
+	}
+}

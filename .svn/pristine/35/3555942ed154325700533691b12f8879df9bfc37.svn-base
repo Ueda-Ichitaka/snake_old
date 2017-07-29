@@ -1,0 +1,54 @@
+package snake.game.objects;
+
+import java.awt.Point;
+
+import processing.core.PApplet;
+import snake.game.OnDraw;
+import snake.game.Spielfenster;
+
+public class Schlangenteil implements OnDraw {
+	private int x, y;
+
+	public Schlangenteil(int xneu, int yneu) {
+		x = xneu;
+		y = yneu;
+	}
+
+	public int xGeben() {
+		return x;
+	}
+
+	public int yGeben() {
+		return y;
+	}
+
+	public void nachRechts() {
+		x = x + 1;
+	}
+
+	public void nachLinks() {
+		x = x - 1;
+	}
+
+	public void nachUnten() {
+		y = y + 1;
+	}
+
+	public void nachOben() {
+		y = y - 1;
+	}
+
+//	public void OnDraw(PApplet window, float scale) {
+//		
+//	}
+
+	@Override
+	public void onDraw(PApplet window, float scale) {
+		window.fill(98,100,98);
+		window.noStroke();
+		Point draw_to = Spielfenster.kachel_nach_pixel(new Point(x,y), scale);
+		window.rect(draw_to.x, draw_to.y, Spielfenster.standard_tile*scale, Spielfenster.standard_tile*scale);
+
+	}
+
+}

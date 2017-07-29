@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="12.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>50</x>
+      <y>170</y>
+      <w>300</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>DATENBANKZUGRIFF
+--
+--
+Connection getconnection()
+List&lt;HIGHSCOREEINTRAG&gt; gethighscore()
+
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>340</x>
+      <y>620</y>
+      <w>210</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>HAUPTFENSTER
+--
+
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>420</x>
+      <y>380</y>
+      <w>210</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>SPIELFENSTER
+--
+
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Interface</type>
+    <coordinates>
+      <x>0</x>
+      <y>590</y>
+      <w>260</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>game::onMove
+--
++void onMove(double passedtime)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>40</x>
+      <y>380</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>game::Schlange
+--
+--
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Interface</type>
+    <coordinates>
+      <x>70</x>
+      <y>490</y>
+      <w>400</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>game::onDraw
+--
++void onDraw(PApplet window, int x,int y, double scale)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>200</x>
+      <y>290</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>Spiel
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>210</x>
+      <y>290</y>
+      <w>80</w>
+      <h>230</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>60;210;30;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>110</x>
+      <y>360</y>
+      <w>180</w>
+      <h>160</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>160;140;30;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>270</x>
+      <y>270</y>
+      <w>180</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>30;30;160;110</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>60</x>
+      <y>380</y>
+      <w>90</w>
+      <h>240</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>70;220;30;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>420</x>
+      <y>220</y>
+      <w>210</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>HIGHSCOREEINTRAG
+--
+String name
+int punkteanzahl
+long datum
+
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

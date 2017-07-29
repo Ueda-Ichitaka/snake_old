@@ -1,0 +1,52 @@
+package snake.game;
+
+import java.awt.Point;
+
+import processing.core.PApplet;
+
+public class Spielfenster extends PApplet {
+	public static final int standard_tile = 30;
+	private Spiel spiel;
+	//Höhe in Pixel
+	private int height,width;
+	private float scale;
+	public Spielfenster(Spiel spiel,int height,int width) {
+		super();
+		this.spiel = spiel;
+		this.height = height;
+		this.width = width;
+		float ratio = width/height;
+		float gameratio = spiel.getWidth()/spiel.getHeight();
+		if(ratio>gameratio){
+			scale =  (height/spiel.getHeight())/(float)standard_tile;
+		}else{
+			scale =  (width/spiel.getWidth())/(float)standard_tile;
+		}
+		
+
+	}
+
+	@Override
+	public void draw() {
+		
+		//super.draw();
+		spiel.onDraw(this, scale);
+		
+	}
+
+	@Override
+	public void setup() {
+		
+		super.setup();
+		this.loop();
+		this.frameRate(30);
+		this.colorMode(HSB);
+		this.setSize(width,height);
+		this.addKeyListener(spiel);
+	}
+	public static Point kachel_nach_pixel (Point tile_point,float scale){
+		Point r = new Point();
+		r.setLocation((tile_point.x)*Spielfenster.standard_tile * scale+1,(tile_point.y)*Spielfenster.standard_tile * scale+1);
+		return r;
+	}
+}

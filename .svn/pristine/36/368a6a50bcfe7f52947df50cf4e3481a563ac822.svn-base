@@ -1,0 +1,37 @@
+package snake.game;
+
+import processing.core.PApplet;
+
+public class Spielfenster extends PApplet {
+	public static final int standard_tile = 30;
+	private Spiel spiel;
+	//Höhe in Pixel
+	private int height,width;
+	private float scale;
+	public Spielfenster(Spiel spiel,int height,int width) {
+		float ratio = width/height;
+		float gameratio = spiel.getWidth()/spiel.getHeight();
+		if(ratio>gameratio){
+			scale =  (height/spiel.getHeight())/standard_tile;
+		}else{
+			scale =  (width/spiel.getWidth())/standard_tile;
+		}
+		this.spiel = spiel;
+
+	}
+
+	@Override
+	public void draw() {
+		
+		super.draw();
+		spiel.onDraw(this, 1);
+	}
+
+	@Override
+	public void setup() {
+		
+		super.setup();
+		this.colorMode(HSB);
+		this.setSize(width,height);
+	}
+}

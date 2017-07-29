@@ -1,0 +1,74 @@
+package snake.game.objects;
+
+import java.awt.Point;
+
+import processing.core.PApplet;
+import snake.game.Spielfenster;
+
+public class Kopf {
+	public static final int RECHTS = 1, LINKS = 2, OBEN = 3, UNTEN = 4;
+	private Point position;
+
+	public Kopf(int xneu, int yneu) {
+		position = new Point(xneu, yneu);
+
+	}
+
+	public int xGeben() {
+		return position.x;
+	}
+
+	public int yGeben() {
+		return position.y;
+	}
+
+	public void move(int dir) {
+		switch (dir) {
+		case 1:
+			position.x++;
+			break;
+		case 2:
+			position.x--;
+			break;
+		case 3:
+			position.y--;
+			break;
+		case 4:
+			position.y++;
+			break;
+
+		}
+
+	}
+
+	public boolean canMove(int dir, int width, int height) {
+		switch (dir) {
+		case RECHTS:
+			return (position.x < width);
+
+		case LINKS:
+			return (position.x > 0);
+
+		case OBEN:
+			return (position.y > 0);
+
+		case UNTEN:
+			return (position.y < height);
+
+		default:
+			return false;
+
+		}
+	}
+
+	public void onDraw(PApplet window, float scale) {
+		window.fill(50, 100, 50);
+		window.noStroke();
+
+		Point draw_to = Spielfenster.kachel_nach_pixel(position, scale);
+
+		window.rect(draw_to.x, draw_to.y, Spielfenster.standard_tile * scale,
+				Spielfenster.standard_tile * scale);
+
+	}
+}

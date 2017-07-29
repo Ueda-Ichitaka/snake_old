@@ -1,0 +1,85 @@
+package snake.database;
+
+public class Highscoreeintrag {
+	
+	public Highscoreeintrag()
+    {
+
+    }
+
+    /**
+     * Methoden
+     */
+    public String spielerNameAusDB(int Platz)
+    {
+        String name;
+        name = DATENBANKZUGRIFF.VerbindungGeben().SpielerNameHolen(Platz);
+
+        return name;
+    }
+    
+    public int getScore(int Platz)
+    {
+    	int platz;
+    	platz = DATENBANKZUGRIFF.VerbindungGeben().SpielerScoreHolen(Platz);
+    	return platz;
+    }
+    
+    public void spielerListeAusgeben()
+    {
+        String [] liste = DATENBANKZUGRIFF.VerbindungGeben().SpielerNamenHolen();
+
+        for (int i = 0; i<liste.length; i++)
+        {
+            System.out.println(liste[i]);
+        }
+    }
+    
+  
+    
+    
+    
+    public void neuerSpieler(String name)
+    {
+        DATENBANKZUGRIFF.VerbindungGeben().spielerEinfuegen (name);
+    }
+    
+    public int AnzSpielerGeben ()
+    {
+        int anzahl;
+        anzahl = DATENBANKZUGRIFF.VerbindungGeben().AnzSpielerGeben ();
+
+        System.out.println("Es sind "+anzahl+" Spieler gespeichert.");
+        return anzahl;
+    }
+    
+   
+    
+    public void SpielerLoeschen(String name)
+    {
+        DATENBANKZUGRIFF.VerbindungGeben().spielerLoeschen (name);
+    }
+    
+    public void beenden(int nr)
+    {
+        DATENBANKZUGRIFF.VerbindungGeben().Schliessen();
+    }
+    
+    public int AnzEintraegeGeben()
+    {
+    int anzahl;
+    anzahl = DATENBANKZUGRIFF.VerbindungGeben().AnzEintraegeGeben ();
+
+    System.out.println("Es sind "+anzahl+" Eintraege gespeichert.");
+    return anzahl;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+
+}

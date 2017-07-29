@@ -1,0 +1,44 @@
+package snake.gui;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class MainMenu extends JPanel 
+{
+	private JFrame host;	//for communication with form
+	private JButton start;	//button to start the game
+	private JButton score;	//button for highscore
+	private JButton opt;	//button for settings		
+	
+	public MainMenu(JFrame host)
+	{
+		this.host = host;
+		this.setSize(host.getSize());
+		setLayout(null);
+		initComponents();
+	}
+	
+	public void initComponents()
+	{		
+		start = new JButton("Start");
+		score = new JButton("Highscore");
+		opt = new JButton("Settings");
+		//cont = new JPanel();
+		//cont.setLayout(new FlowLayout());
+		
+		add(start);
+		add(score);
+		add(opt);
+		
+		//position the components manually without layout-manager
+		Insets insets = this.getInsets();
+		Dimension size = start.getPreferredSize();
+		start.setBounds(400 + insets.left, 100 + insets.top, size.width, size.height);
+		size = score.getPreferredSize();
+		score.setBounds(400 + insets.left, 150 + insets.top, size.width, size.height);
+		size = opt.getPreferredSize();
+		opt.setBounds(400 + insets.left, 200 + insets.top, size.width, size.height);
+		
+
+	}
+}

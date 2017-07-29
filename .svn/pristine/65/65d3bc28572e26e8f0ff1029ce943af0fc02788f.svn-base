@@ -1,0 +1,49 @@
+package snake.game.objects;
+
+import processing.core.PApplet;
+import snake.game.OnCollide;
+import snake.game.OnDraw;
+import snake.game.Spielfenster;
+
+import java.awt.Point;
+import java.util.List;
+
+public class Apfel implements OnDraw, OnCollide {
+
+	private Point position;
+	private List<OnCollide> objects;
+
+	public Apfel(int x, int y) {
+		position = new Point(x, y);
+
+	}
+
+	public void onDraw(PApplet window, float scale, int actual_tile_dimension) {
+		window.fill(120, 100, 100);
+		window.noStroke();
+
+		Point draw_to = Spielfenster.kachel_nach_pixel(position, scale);
+
+		window.rect(draw_to.x, draw_to.y, Spielfenster.standard_tile * scale,
+				Spielfenster.standard_tile * scale);
+
+	}
+
+	@Override
+	public boolean onCollide(OnCollide colliding) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<OnCollide> getobjects() {
+		// TODO Auto-generated method stub
+		return objects;
+	}
+
+	@Override
+	public Point getposition() {
+		// TODO Auto-generated method stub
+		return position;
+	}
+}

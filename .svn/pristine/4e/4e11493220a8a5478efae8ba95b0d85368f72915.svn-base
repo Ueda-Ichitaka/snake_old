@@ -1,0 +1,74 @@
+package snake.gui;
+
+import javax.swing.*;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class GameOverPanel extends JPanel implements ActionListener
+{
+	private static final int BOLD = 0;
+	private MainForm host;	//for communication with form
+	private JLabel title;
+	private JLabel score;
+	private JButton ng;		//button to start new game
+	private JButton end;	//button to end game
+	
+	//overlay panel for gameover screen
+	public GameOverPanel(MainForm host)
+	{
+		this.host = host;
+		this.setSize(host.getSize());
+		this.setLayout(null);
+		initComponents();
+	}
+	
+	public void initComponents()
+	{
+		title = new JLabel("GAME OVER");
+		score = new JLabel("YOUR SCORE: ");
+		ng = new JButton("NEW GAME");
+		end = new JButton("BACK TO MENU");
+		
+		title.setFont(new Font("Dialog", BOLD, 30));
+		title.setForeground(Color.black);
+		
+		this.setBackground(new Color(0, 0, 0, 64));
+		
+		add(title);
+		add(score);
+		add(ng);
+		add(end);
+		
+		ng.addActionListener(this);
+		end.addActionListener(this);
+		
+		Insets insets = this.getInsets();
+		Dimension size = title.getPreferredSize(); 
+		title.setBounds(400 - (size.width / 2) + insets.left, 50 + insets.top, size.width, size.height);
+		size = score.getPreferredSize();
+		score.setBounds(400 - (size.width / 2) + insets.left, 150 + insets.top, size.width, size.height);
+		size = ng.getPreferredSize();
+		ng.setBounds(400 - size.width - 50 + insets.left, 300 + insets.top, size.width, size.height);
+		size = end.getPreferredSize();
+		end.setBounds(400 + 50 + insets.left, 300 + insets.top, size.width, size.height);
+		
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) 
+	{
+		if(e.getSource() == end)
+		{
+			//host.endgame
+			host.showMain();
+		}
+		if(e.getSource() == ng)
+		{
+			//this.hide
+			//host.startGame
+		}
+	}
+
+}

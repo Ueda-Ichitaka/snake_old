@@ -1,0 +1,72 @@
+package snake.database;
+
+public class Highscoreeintrag {
+	
+	public String name;
+	public int punktezahl;
+	public int score_id;
+	
+	public Highscoreeintrag(String name, int punktezahl, int score_id) {
+		super();
+		this.name = name;
+		this.punktezahl = punktezahl;
+		this.score_id = score_id;
+	}
+	
+	public Highscoreeintrag(){
+	
+	}
+
+	
+	
+	
+
+    /**
+     * Methoden
+     */
+    public String spielerNameAusDB(int id)
+    {
+        String name;
+        name = DATENBANKZUGRIFF.VerbindungGeben().SpielerNameHolen(id);
+
+        return name;
+    }
+    
+    public int getScore(int id)
+    {
+    	int platz;
+    	platz = DATENBANKZUGRIFF.VerbindungGeben().SpielerScoreHolen(id);
+    	return platz;
+    }
+    
+    
+     
+    
+    public void neuerSpieler(String name, int punktezahl)
+    {
+        DATENBANKZUGRIFF.VerbindungGeben().spielerEinfuegen(name,punktezahl);
+    }
+    
+   
+        
+    public void SpielerLoeschen(int id)
+    {
+        DATENBANKZUGRIFF.VerbindungGeben().spielerLoeschen (id);
+    }
+    
+    public void beenden(int nr)
+    {
+        DATENBANKZUGRIFF.VerbindungGeben().Schliessen();
+    }
+    
+    public int AnzEintraegeGeben()
+    {
+    	int anzahl;
+    	anzahl = DATENBANKZUGRIFF.VerbindungGeben().AnzEintraegeGeben ();
+
+    	System.out.println("Es sind "+anzahl+" Eintraege gespeichert.");
+    	return anzahl;
+    }
+    
+   
+}

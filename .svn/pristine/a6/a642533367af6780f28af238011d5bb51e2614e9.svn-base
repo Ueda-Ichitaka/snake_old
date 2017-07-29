@@ -1,0 +1,15 @@
+package snake.game.objects;
+
+import processing.core.PApplet;
+import snake.game.OnDraw;
+import snake.game.Spielfenster;
+
+public class BackgroundTile implements OnDraw {
+
+	@Override
+	public void onDraw(PApplet window, float scale) {
+		window.rect(x, y, Spielfenster.standard_tile * scale, Spielfenster.standard_tile * scale);
+
+	}
+
+}

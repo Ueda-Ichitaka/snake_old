@@ -1,0 +1,55 @@
+package snake.game.objects;
+
+import java.awt.Point;
+import java.util.List;
+
+import processing.core.PApplet;
+import snake.game.OnCollide;
+import snake.game.OnDraw;
+import snake.game.OnMove;
+
+public class Schwanz implements OnDraw,OnCollide{
+	
+	public Schwanz(Direction direction, Point position) {
+		super();
+		this.direction = direction;
+		this.position = position;
+	}
+	//Die Richtung, in die der Schwanz zeigt (also der Körper weitergeht)
+	private Direction direction;
+	private Point position;
+	@Override
+	public boolean onCollide(OnCollide colliding) {
+		
+		return false;
+	}
+
+	@Override
+	public List<OnCollide> getobjects() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Point getposition() {
+		
+		return position;
+	}
+
+	public void move (Direction dir){
+		direction = dir;
+		switch(dir){
+		case LINKS:
+			
+		
+		
+		}
+	}
+
+	@Override
+	public void onDraw(PApplet window, float scale) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

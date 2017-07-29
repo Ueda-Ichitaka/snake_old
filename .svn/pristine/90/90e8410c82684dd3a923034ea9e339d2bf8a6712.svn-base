@@ -1,0 +1,77 @@
+package snake.game.objects;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import processing.core.PApplet;
+import snake.game.ActionEnum;
+import snake.game.OnAction;
+import snake.game.OnDraw;
+import snake.game.OnMove;
+
+public class Schlange implements OnMove, OnDraw, OnAction {
+
+	private List<Schlangenteil> schlange;
+	private int laenge;
+	private int direction;
+	private Kopf kopf;
+
+	public Schlange() {
+		laenge = 10;
+		schlange = new LinkedList<Schlangenteil>();
+		direction = 1;
+		kopf = new Kopf(11,3);
+	}
+
+	public void start() {
+		for (int i = laenge-1; i > 0; i--) {
+			schlange.add(new Schlangenteil((i + 1), 3));
+		}
+	}
+
+	public void onDraw(PApplet window, float scale) {
+		for (Schlangenteil teil : schlange) {
+			teil.onDraw(window, scale);
+
+		}
+	}
+
+	public boolean onMove(int width, int height) {
+		System.out.println("First coord 1: x:" + kopf.xGeben() + " y:"+ kopf.yGeben());
+		
+		if(kopf.canMove(direction, width, height))
+		{
+		schlange.add(1, new Schlangenteil(kopf.xGeben(), kopf.yGeben()));
+		kopf.move(direction);
+		
+		schlange.remove(laenge);
+		System.out.println("First coord 2: x:" + kopf.xGeben() + " y:"+ kopf.yGeben());
+		return true;
+		}
+		else
+		{
+			return false;		
+		}
+
+	}
+
+	@Override
+	public void onAction(ActionEnum action) {
+		
+		switch (action) {
+		case LINKS:
+			direction = 2;
+			break;
+		case RECHTS:
+			direction = 1;
+			break;
+		case OBEN:
+			direction = 3;
+			break;
+		case UNTEN:
+			direction = 4;
+			break;
+		}
+	}
+
+}

@@ -1,0 +1,158 @@
+package snake.game;
+
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+
+public class Spielfenster extends PApplet {
+	private PImage background,snake_head,snake_straight,snake_tail,snake_corner,apple;
+	
+	public PImage getBackground_Image() {
+		return background;
+	}
+
+	public PImage getSnake_head() {
+		return snake_head;
+	}
+
+	public PImage getSnake_straight() {
+		return snake_straight;
+	}
+
+	public PImage getSnake_tail() {
+		return snake_tail;
+	}
+
+	public PImage getSnake_corner() {
+		return snake_corner;
+	}
+
+	public PImage getApple() {
+		return apple;
+	}
+
+	public static final int standard_tile = 30;
+	private Spiel spiel;
+	// Höhe in Pixel
+	private int height, width;
+	private float scale;
+
+	public Spielfenster(Spiel spiel, int height, int width) {
+		super();
+		this.spiel = spiel;
+		this.height = height;
+		this.width = width;
+		
+		System.out.println("Skalierung: " + scale);
+		// spiel.setHost(findWindow(Spielfenster.this));
+	}
+
+	public PImage loadImageFromRessource(String path) throws IOException {
+		BufferedImage bi;
+		Image i = Toolkit.getDefaultToolkit().createImage(getClass().getClassLoader().getResource(path));
+		//bi = ImageIO
+		//		.read(getClass().getClassLoader().getResourceAsStream(path));
+		PImage pi = this.loadImageMT(i);
+		if(path.endsWith(".png")||path.endsWith(".gif")){
+			pi.format = PImage.ARGB;
+		}
+		
+		return pi;
+
+	}
+
+	private void loadRessources() {
+		try {
+			
+			background = loadImageFromRessource("snake/res/bgTile2.jpg");
+			snake_head = loadImageFromRessource("snake/res/snakeHead.png");
+			snake_tail = loadImageFromRessource("snake/res/snakeTail.png");
+			snake_straight = loadImageFromRessource("snake/res/snakeStraight.png");
+			snake_corner = loadImageFromRessource("snake/res/snakeEdge.png");
+			apple = loadImageFromRessource("snake/res/apple2.png");
+		
+		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		resizeImages();
+	}
+
+	@Override
+	public void draw() {
+
+		// super.draw();
+		spiel.onDraw(this, scale, (int) (Spielfenster.standard_tile * scale));
+
+	}
+
+	@Override
+	public void setup() {
+		
+		//Berechne die Skalierung
+		float ratio = width / height;
+		float gameratio = spiel.getWidth() / spiel.getHeight();
+		if (ratio > gameratio) {
+			scale = (height / spiel.getHeight()) / (float) standard_tile;
+		} else {
+			scale = (width / spiel.getWidth()) / (float) standard_tile;
+		}
+		loadRessources();
+		super.setup();
+		//this.imageMode(CENTER);
+		this.loop();
+		this.frameRate(30);
+		this.colorMode(HSB);
+		this.size(width, height);
+		this.addKeyListener(spiel);
+		setPreferredSize(new Dimension(500, 500));
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				// Dies muss in invokeLater geschehen, da sonst eventuell noch
+				// nicht alle Events abgearbeitet sind
+				Spielfenster.this.spiel.setHost(findWindow(Spielfenster.this));
+				findWindow(Spielfenster.this).pack();
+
+				spiel.start();
+			}
+		});
+
+	}
+	private void resizeImages(){
+		int size = (int) (Spielfenster.standard_tile * scale);
+		background.resize(size, 0);
+		snake_head.resize(size, 0);
+		snake_tail.resize(size, 0);
+		snake_straight.resize(size, 0);
+		snake_corner.resize(size, 0);
+	}
+	public static Point kachel_nach_pixel(Point tile_point, float scale) {
+		Point r = new Point();
+		r.setLocation((tile_point.x) * Spielfenster.standard_tile * scale + 1,
+				(tile_point.y) * Spielfenster.standard_tile * scale + 1);
+		return r;
+	}
+
+	public static Window findWindow(Component c) {
+		if (c == null) {
+			return JOptionPane.getRootFrame();
+		} else if (c instanceof Window) {
+			return (Window) c;
+		} else {
+			return findWindow(c.getParent());
+		}
+	}
+}

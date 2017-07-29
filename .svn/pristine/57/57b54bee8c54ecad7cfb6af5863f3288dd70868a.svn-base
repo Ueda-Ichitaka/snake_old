@@ -1,0 +1,10 @@
+package snake.game;
+
+import java.awt.Point;
+import java.util.List;
+
+public interface OnCollide {
+	public boolean onCollide (OnCollide colliding);
+	public List<OnCollide> getobjects();
+	public Point getposition();
+}

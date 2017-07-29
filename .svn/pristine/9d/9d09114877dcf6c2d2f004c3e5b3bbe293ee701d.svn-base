@@ -1,0 +1,9 @@
+package snake.test;
+
+import snake.game.*;
+
+public class GameGenerator {
+	public Spiel generate_game(){
+		
+	}
+}

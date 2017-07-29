@@ -1,0 +1,107 @@
+package snake.gui;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import snake.database.*;
+import snake.game.*;
+
+public class ScorePanel extends JPanel implements ActionListener
+{
+	private static final int BOLD = 0;
+	private MainForm host;	//for communication with form
+	private JButton back;
+	private JLabel title;	
+	ScoreLabel top;
+	
+	int x = 50;
+	Highscoreeintrag entries = new Highscoreeintrag();
+	int l = entries.AnzEintraegeGeben();
+	
+	public ScorePanel()
+	{
+		initComponents();
+	}
+	
+	public ScorePanel(MainForm host)
+	{
+		this.host = host;
+		this.setSize(host.getSize());
+		this.setLayout(null);
+		this.setBackground(Color.green);
+		initComponents();
+	}
+	
+	public void initComponents()
+	{
+		back = new JButton("<");
+		title = new JLabel("HIGHSCORE");	
+		top = new ScoreLabel("RANK", "NAME", "SCORE");
+		
+		add(top);		
+		add(back);
+		add(title);
+		
+		title.setFont(new Font("Dialog", BOLD, 24));
+		title.setForeground(Color.black);
+		
+		back.addActionListener(this);
+		
+		Insets insets = this.getInsets();
+		Dimension size = back.getPreferredSize();
+		back.setBounds(10 + insets.left, 5 + insets.top, size.width, size.height);
+		size = title.getPreferredSize();
+		title.setBounds(400 - (size.width / 2) + insets.left, 10 + insets.top, size.width, size.height);		
+		size = top.getPreferredSize();
+		top.setBounds(100 + insets.left, 50 + insets.top, size.width, size.height);
+	}
+	
+	/*
+	public void fillScoreArray(Highscoreeintrag entry)
+	{
+		for(int i = 0; i < l; i++)
+		{
+			if(entries[i] == null)
+				entries[i] = entry;
+			else
+				System.out.println("platz " + i + " bereits belegt. continue");
+		}
+	}
+	*/
+	
+	public void initScore()
+	{
+		for(int i = 0; i < l; i++)
+		{
+			if(entries.spielerNameAusDB(i) != null || entries.spielerNameAusDB(i) != "")
+			{
+				ScoreLabel score = new ScoreLabel("" + i, entries.spielerNameAusDB(i), "" + entries.getScore(i));
+				add(score);
+				this.setPosition(score);
+			}
+		}
+	}
+	
+	public void setPosition(ScoreLabel score)
+	{
+		Insets insets = this.getInsets();
+		Dimension size = score.getPreferredSize();
+		score.setBounds(100 + insets.left, x + 50 + insets.top, size.width, size.height);
+		x = x + 50;
+	}
+	
+	//TODO add class for highscore entry
+	//TODO add db conn
+	//TODO add highscore entry listing (view)
+
+	@Override
+	public void actionPerformed(ActionEvent e) 
+	{
+		if(e.getSource() == back)
+		{
+			host.showMain();
+		}
+	}
+}
